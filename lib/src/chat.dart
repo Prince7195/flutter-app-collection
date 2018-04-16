@@ -1,0 +1,106 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+
+class Chat extends StatefulWidget {
+  
+  @override
+  State createState() => new ChatWindow();
+}
+
+class ChatWindow extends State<Chat> with TickerProviderStateMixin {
+  final List<Msg> _message = <Msg>[];
+  final TextEditingController _textController = new TextEditingController();
+  bool _isWritting = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Chat App'),
+        elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 0.6,
+      ),
+      body: new Column(
+        children: <Widget>[
+          new Flexible(
+            child: new ListView.builder(
+              itemBuilder: (_, int index) => _message[index],
+              itemCount: _message.length,
+              reverse: true,
+              padding: new EdgeInsets.all(6.0),
+            ),
+          ),
+          new Divider(
+            height: 1.0,
+          ),
+          new Container(
+            child: _buildComposer(),
+            decoration: new BoxDecoration(
+              color: Theme.of(context).cardColor
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComposer() {
+    return new IconTheme(
+      data: new IconThemeData(
+        color: Theme.of(context).accentColor
+      ),
+      child: new Container(
+        margin: const EdgeInsets.symmetric(horizontal: 9.0),
+        child: new Row(
+          children: <Widget>[
+            new Flexible(
+              child: new TextField(
+                controller: _textController,
+                onChanged: (String txt) {
+                  setState(() {
+                    _isWritting = txt.length > 0;
+                  });
+                },
+                onSubmitted: _submitMsg,
+                decoration: new InputDecoration.collapsed(
+                  hintText: "Enter Some Message"
+                ),
+              ),
+            ),
+            new Container(
+              margin: new EdgeInsets.symmetric(horizontal: 3.0),
+              child: Theme.of(context).platform == TargetPlatform.iOS ?
+              new CupertinoButton(
+                child: new Text('Submit'),
+                onPressed: _isWritting ? () => _submitMsg(_textController.text) : null
+              ) : 
+              new IconButton(
+                icon: new Icon(Icons.message),
+                onPressed: _isWritting ? () => _submitMsg(_textController.text) : null
+              )
+            )
+          ],
+        ),
+        decoration: Theme.of(context).platform == TargetPlatform.iOS
+        ? new BoxDecoration(
+          border: new Border(
+            top: new BorderSide(
+              color: Colors.brown[200]
+            )
+          )
+        ) : null
+      ),
+    );
+  }
+
+  void _submitMsg(String txt) {
+    _textController.clear();
+    setState(() {
+          _isWritting = false;
+        });
+  }
+
+}
+
+class Msg extends StatelessWidget {
+
+}
